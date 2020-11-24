@@ -23,10 +23,12 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/api")
 public class NodeController {
     private Nodes nodes;
+    private static int timeout;
 
     @Autowired
     public NodeController(Nodes nodes) {
         this.nodes = nodes;
+        timeout = 60;
     }
 
     @RequestMapping(value = "/register/node", method = RequestMethod.POST,
@@ -54,7 +56,7 @@ public class NodeController {
             return new ResponseEntity<>("Host and/or port is missing.", HttpStatus.BAD_REQUEST);
         } else {
             String address = String.format("http://%s:%s", jsonBody.get("host"), jsonBody.get("port"));
-            Node node = new Node(address);
+            Node node = new Node(address, timeout);
 
             if(jsonBody.has("applicationName")) {
                 name = jsonBody.getString("applicationName");
@@ -76,9 +78,25 @@ public class NodeController {
     }
 
     @RequestMapping(value = "/delete/node/{name}", method = RequestMethod.GET)
-    @ApiOperation(value = "Удаление информации об определенном узле.")
+    @ApiOperation(value = "Удаление информации об определенном узле. В качестве параметра используется \"applicationName\" узла.")
     public ResponseEntity<String> deleteNodes(@PathVariable String name) {
         nodes.getNodeConcurrentHashMap().remove(name);
         return new ResponseEntity<>(String.format("Information about node %s has been deleted.", name), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/set/timeout/{value}", method = RequestMethod.GET)
+    @ApiOperation(value = "Изменение значения параметра таймаута.")
+    public ResponseEntity<String> setTimeout(@PathVariable int value) {
+        this.timeout = value;
+
+        for(Node x : nodes.getNodeConcurrentHashMap().values()) {
+            x.setTimeout(value);
+        }
+
+        return new ResponseEntity<>(String.format("Set timeout value %s", value), HttpStatus.OK);
+    }
+
+    public static int getTimeout() {
+        return timeout;
     }
 }

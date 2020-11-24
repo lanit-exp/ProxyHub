@@ -102,4 +102,15 @@ class NodeTests {
 		content = resultGetRequest.getResponse().getContentAsString();
 		Assertions.assertEquals("Information about node applicationName has been deleted.", content);
 	}
+
+	@Test
+	public void setTimeoutTest() throws Exception {
+		MvcResult result = mockMvc.perform(get("/api/set/timeout/120"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andReturn();
+
+		content = result.getResponse().getContentAsString();
+		Assertions.assertEquals("Set timeout value 120", content);
+	}
 }

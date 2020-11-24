@@ -3,7 +3,7 @@
 ## Регистрация узлов.
 
 Для регистрации узлов необходимо отправить запрос по адресу http://host:port/register/node
-(например http://localhost:4444/api/register/node) JSON с основными параметрами ноды.
+(например http://localhost:4444/api/register/node) с JSON, в котором содержатся основные параметры ноды.
 Пример JSON:
 
 ```
@@ -13,10 +13,13 @@
     "applicationName" : "applicationName"
 }
 ```
-, где параметр "applicationName" можно опустить, т.к. в таком случае хаб сам сгенерирует имя узла.
+, где параметр "applicationName" можно опустить, т.к. в таком случае хаб сам сгенерирует имя узла. 
+В качестве альтеранативы, можно зарегистрировать узлы при помощи файла nodes.yaml. Однако, в таком случае, 
+необходимо обязательно задать имя узла, иначе, это приведет к ошибке чтения файла. При запуске jar-файла с сервисом 
+обязательно необходимо, чтобы данный файл находился в той же директории, что и само приложение.
 
 Получить информацию о всех узлах можно, отправив GET-запрос по адресу 
-http://host:port/get/nodes (например http://localhost:4444/status).
+http://host:port/status (например http://localhost:4444/status).
 
 ## Swagger
 
@@ -25,3 +28,9 @@ http://host:port/get/nodes (например http://localhost:4444/status).
     http://localhost:4444/swagger-ui.html
 
 будет доступен Swagger.
+
+## API
+* ```POST: /api/register/node```
+* ```GET: /api/delete/nodes```
+* ```GET: /api/delete/node/{name}```
+* ```GET: /api/set/timeout/{value}```

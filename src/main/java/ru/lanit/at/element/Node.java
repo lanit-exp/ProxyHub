@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.Timer;
@@ -18,15 +17,15 @@ public class Node {
     private String address;
     private boolean free;
     private String idSession;
-
     private Timer timer;
-    private AtomicInteger timeout = new AtomicInteger(60);
+    private AtomicInteger timeout;
 
-    public Node(String address) {
+    public Node(String address, int timeout) {
         this.address = address;
         this.free = true;
         this.idSession = " ";
         this.timer = new Timer();
+        this.timeout = new AtomicInteger(timeout);
     }
 
     public boolean isFree() {
