@@ -7,11 +7,11 @@
 Пример JSON:
 
 ```
-    {
-        "host" : "host",
-        "port" : "port",
-        "name" : "applicationName"
-    }
+{
+    "host" : "host",
+    "port" : "port",
+    "name" : "applicationName"
+}
 ```
 
 Получить информацию о всех узлах можно, отправив GET-запрос по адресу 

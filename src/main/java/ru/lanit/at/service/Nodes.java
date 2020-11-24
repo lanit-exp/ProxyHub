@@ -1,12 +1,12 @@
 package ru.lanit.at.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.lanit.at.element.Node;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+@Service
 public class Nodes {
     private Map<String, Node> nodeConcurrentHashMap;
 
@@ -28,8 +28,8 @@ public class Nodes {
 
     @Override
     public String toString() {
-        return "Nodes{ " +
+        return "Nodes { " +
                 nodeConcurrentHashMap +
-                '}';
+                " }";
     }
 }

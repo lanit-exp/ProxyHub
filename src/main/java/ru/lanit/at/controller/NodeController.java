@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,8 +16,7 @@ import ru.lanit.at.service.Nodes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,9 +34,9 @@ public class NodeController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Регистрация узла через отправку JSON. При желании можно указать имя узла через параметр \"applicationName\".")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Узел успешно зарегистрирован.", response = String.class),
+            @ApiResponse(code = 200, message = "The node has been registered successfully.", response = String.class),
             @ApiResponse(code = 500, message = "Error", response = String.class),
-            @ApiResponse(code = 400, message = "Отсутствует хост и/или порт.", response = String.class)
+            @ApiResponse(code = 400, message = "Host and/or port is missing.", response = String.class)
     })
     public ResponseEntity<String> registerNode(@Context HttpServletRequest request) {
         String body;
@@ -51,7 +51,7 @@ public class NodeController {
         String name;
 
         if(!jsonBody.has("host") || !jsonBody.has("port")) {
-            return new ResponseEntity<>("Отсутствует хост и/или порт.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Host and/or port is missing.", HttpStatus.BAD_REQUEST);
         } else {
             String address = String.format("http://%s:%s", jsonBody.get("host"), jsonBody.get("port"));
             Node node = new Node(address);
@@ -65,12 +65,47 @@ public class NodeController {
             nodes.setNode(name, node);
         }
 
-        return new ResponseEntity<>("Узел успешно зарегистрирован. Имя узла - \"" + name + "\"", HttpStatus.OK);
+        return new ResponseEntity<>("The node has been registered successfully. The name - \"" + name + "\"", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/get/nodes", method = RequestMethod.GET)
     @ApiOperation(value = "Получение информации о текущих узлах.")
-    public ResponseEntity<String> getNodes() {
-        return new ResponseEntity<>(nodes.toString(), HttpStatus.OK);
+    public ResponseEntity<List<Map<String, String>>> getNodes() {
+        return new ResponseEntity<>(getAllNodes(), HttpStatus.OK);
+    }
+
+    public List<Map<String, String>> getAllNodes() {
+        List<Map<String, String>> elements = new ArrayList<>();
+
+        for (Map.Entry<String, Node> node : nodes.getNodeConcurrentHashMap().entrySet()) {
+            Map<String, String> element = new HashMap<>();
+            element.put("applicationName", node.getKey());
+            element.put("address", node.getValue().getAddress());
+
+            if(node.getValue().isFree()) {
+                element.put("isFree", "Yes");
+            } else {
+                element.put("isFree", "No");
+            }
+
+            element.put("idSession", node.getValue().getIdSession());
+
+            elements.add(element);
+        }
+        return elements;
+    }
+
+    @RequestMapping(value = "/delete/nodes", method = RequestMethod.GET)
+    @ApiOperation(value = "Удаление информации о текущих узлах.")
+    public ResponseEntity<String> deleteNodes() {
+        nodes.getNodeConcurrentHashMap().clear();
+        return new ResponseEntity<>("Information has been deleted.", HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/delete/node/{name}", method = RequestMethod.GET)
+    @ApiOperation(value = "Удаление информации об определенном узле.")
+    public ResponseEntity<String> deleteNodes(@PathVariable String name) {
+        nodes.getNodeConcurrentHashMap().remove(name);
+        return new ResponseEntity<>(String.format("Information about node %s has been deleted.", name), HttpStatus.OK);
     }
 }

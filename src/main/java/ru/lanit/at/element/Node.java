@@ -11,7 +11,7 @@ public class Node {
 
     public Node(String address) {
         this.address = address;
-        this.free = false;
+        this.free = true;
         this.idSession = " ";
     }
 
