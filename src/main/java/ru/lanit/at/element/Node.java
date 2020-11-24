@@ -100,6 +100,14 @@ public class Node {
         return jsonString;
     }
 
+    public String getString() {
+        return "Node {" +
+                "address='" + address + '\'' +
+                ", free=" + free +
+                ", idSession='" + idSession + '\'' +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

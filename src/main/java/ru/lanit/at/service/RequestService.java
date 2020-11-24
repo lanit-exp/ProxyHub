@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Service
 public class RequestService {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public HttpResponse<String> doPost(Map<String, String> headers, String body, String url, String uri) {
         HttpRequestWithBody request = Unirest.post(url + uri);

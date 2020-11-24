@@ -157,7 +157,7 @@ public class HubController {
         node.setIdSession(id);
         node.startTimer();
 
-        logger.info(String.format("Start session with and node %s parameters: %s",
+        logger.info(String.format("Start session with sessionId = %s and parameters: %s",
                 node.getIdSession(),
                 responseBody.toString()));
 
