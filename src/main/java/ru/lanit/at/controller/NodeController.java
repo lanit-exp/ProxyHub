@@ -68,33 +68,6 @@ public class NodeController {
         return new ResponseEntity<>("The node has been registered successfully. The name - \"" + name + "\"", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/get/nodes", method = RequestMethod.GET)
-    @ApiOperation(value = "Получение информации о текущих узлах.")
-    public ResponseEntity<List<Map<String, String>>> getNodes() {
-        return new ResponseEntity<>(getAllNodes(), HttpStatus.OK);
-    }
-
-    public List<Map<String, String>> getAllNodes() {
-        List<Map<String, String>> elements = new ArrayList<>();
-
-        for (Map.Entry<String, Node> node : nodes.getNodeConcurrentHashMap().entrySet()) {
-            Map<String, String> element = new HashMap<>();
-            element.put("applicationName", node.getKey());
-            element.put("address", node.getValue().getAddress());
-
-            if(node.getValue().isFree()) {
-                element.put("isFree", "Yes");
-            } else {
-                element.put("isFree", "No");
-            }
-
-            element.put("idSession", node.getValue().getIdSession());
-
-            elements.add(element);
-        }
-        return elements;
-    }
-
     @RequestMapping(value = "/delete/nodes", method = RequestMethod.GET)
     @ApiOperation(value = "Удаление информации о текущих узлах.")
     public ResponseEntity<String> deleteNodes() {

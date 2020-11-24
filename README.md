@@ -10,12 +10,13 @@
 {
     "host" : "host",
     "port" : "port",
-    "name" : "applicationName"
+    "applicationName" : "applicationName"
 }
 ```
+, где параметр "applicationName" можно опустить, т.к. в таком случае хаб сам сгенерирует имя узла.
 
 Получить информацию о всех узлах можно, отправив GET-запрос по адресу 
-http://host:port/get/nodes (например http://localhost:4444/api/register/node).
+http://host:port/get/nodes (например http://localhost:4444/status).
 
 ## Swagger
 

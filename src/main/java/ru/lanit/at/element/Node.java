@@ -1,18 +1,32 @@
 package ru.lanit.at.element;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Node {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private String address;
     private boolean free;
     private String idSession;
+
+    private Timer timer;
+    private AtomicInteger timeout = new AtomicInteger(60);
 
     public Node(String address) {
         this.address = address;
         this.free = true;
         this.idSession = " ";
+        this.timer = new Timer();
     }
 
     public boolean isFree() {
@@ -39,13 +53,52 @@ public class Node {
         this.address = address;
     }
 
+    public void startTimer() {
+        timeout.set(60);
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                if (timeout.get() < 0) {
+                    logger.info("Освобождение ресурсов по таймауту.");
+                    clearInfo();
+                    timer.cancel();
+                } else {
+                    timeout.decrementAndGet();
+                }
+            }
+        }, 0, 1000);
+    }
+
+    private void clearInfo() {
+        this.setFree(true);
+        this.setIdSession(" ");
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout.set(timeout);
+    }
+
+    public String getTimeout() {
+        return String.valueOf(timeout.get());
+    }
+
+    public Timer getTimer() {
+        return timer;
+    }
+
     @Override
     public String toString() {
-        return "Node {" +
-                "address='" + address + '\'' +
-                ", free=" + free +
-                ", idSession='" + idSession + '\'' +
-                '}';
+        ObjectMapper mapper = new ObjectMapper();
+
+        String jsonString = "";
+        try {
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            jsonString = mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return jsonString;
     }
 
     @Override

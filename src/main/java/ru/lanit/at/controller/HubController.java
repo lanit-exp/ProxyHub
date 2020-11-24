@@ -19,29 +19,26 @@ import ru.lanit.at.service.RequestService;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/")
 public class HubController {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Nodes nodes;
     private RequestService requestService;
-    private Semaphore semaphore;
 
     @Autowired
     public HubController(Nodes nodes, RequestService requestService) {
         this.nodes = nodes;
         this.requestService = requestService;
-        this.semaphore = new Semaphore(1);
     }
 
     @RequestMapping(value = {"/**"},
             method = {RequestMethod.POST, RequestMethod.GET, RequestMethod.DELETE})
-    @ApiOperation(value = "Отправка обычного запроса в драйвер")
+    @ApiOperation(value = "Отправка запроса в proxy driver.")
     public ResponseEntity<?> sendRequest(@Context HttpServletRequest request) {
         return resultRequest(request);
     }
@@ -54,7 +51,7 @@ public class HubController {
         }
 
         String body = "";
-        String url = "";
+        String url;
 
         try {
             if ("POST".equalsIgnoreCase(request.getMethod())) {
@@ -86,7 +83,10 @@ public class HubController {
         if ("DELETE".equalsIgnoreCase(method)) {
             workNode.get().setFree(true);
             workNode.get().setIdSession(" ");
+            workNode.get().getTimer().cancel();
         }
+
+        workNode.get().setTimeout(60);
 
         if(!response.getBody().isEmpty()) {
             return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
@@ -124,7 +124,6 @@ public class HubController {
 
             HttpResponse<String> response;
             String method = request.getMethod();
-            JSONObject responseBody;
 
             if(node.isPresent()) {
                 response = getResponse(method, request, body, node.get().getAddress(), uri);
@@ -132,32 +131,37 @@ public class HubController {
                 return new ResponseEntity<>("List is empty or all nodes are busy.", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            responseBody = new JSONObject(response.getBody());
-
-            String id;
-
-            if(responseBody.has("sessionId")) {
-                id = responseBody.get("sessionId").toString();
-            } else {
-                if(responseBody.has("value")) {
-                    JSONObject value = (JSONObject) responseBody.get("value");
-                    id = value.getString("sessionId");
-                } else {
-                    id = UUID.randomUUID().toString().replace("-", "");
-                }
-            }
-
-            node.get().setIdSession(id);
-
-            logger.info(String.format("Start session with and node %s parameters: %s",
-                    node.get().getIdSession(),
-                    responseBody.toString()));
-
-            return new ResponseEntity<>(responseBody.toString(), HttpStatus.OK);
+            return new ResponseEntity<>(startNode(response, node.get()), HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>("Error of proxy driver: \n" + e.toString(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public String startNode(HttpResponse<String> response, Node node) {
+        JSONObject responseBody = new JSONObject(response.getBody());
+
+        String id;
+
+        if(responseBody.has("sessionId")) {
+            id = responseBody.get("sessionId").toString();
+        } else {
+            if(responseBody.has("value")) {
+                JSONObject value = (JSONObject) responseBody.get("value");
+                id = value.getString("sessionId");
+            } else {
+                id = UUID.randomUUID().toString().replace("-", "");
+            }
+        }
+
+        node.setIdSession(id);
+        node.startTimer();
+
+        logger.info(String.format("Start session with and node %s parameters: %s",
+                node.getIdSession(),
+                responseBody.toString()));
+
+        return responseBody.toString();
     }
 
     public HttpResponse<String> getResponse(String method, HttpServletRequest request, String body, String url, String uri) {
@@ -241,5 +245,33 @@ public class HubController {
 
     private void takeNode(Node node) {
         node.setFree(false);
+    }
+
+    @RequestMapping(value = "/status", method = RequestMethod.GET)
+    @ApiOperation(value = "Получение информации о текущих узлах.")
+    public ResponseEntity<List<Map<String, String>>> getNodes() {
+        return new ResponseEntity<>(getAllNodes(), HttpStatus.OK);
+    }
+
+    public List<Map<String, String>> getAllNodes() {
+        List<Map<String, String>> elements = new ArrayList<>();
+
+        for (Map.Entry<String, Node> node : nodes.getNodeConcurrentHashMap().entrySet()) {
+            Map<String, String> element = new HashMap<>();
+            element.put("applicationName", node.getKey());
+            element.put("address", node.getValue().getAddress());
+            element.put("timeout", node.getValue().getTimeout());
+
+            if(node.getValue().isFree()) {
+                element.put("isFree", "Yes");
+            } else {
+                element.put("isFree", "No");
+            }
+
+            element.put("idSession", node.getValue().getIdSession());
+
+            elements.add(element);
+        }
+        return elements;
     }
 }

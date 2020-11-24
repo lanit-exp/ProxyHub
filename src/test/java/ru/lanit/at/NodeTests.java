@@ -25,6 +25,14 @@ class NodeTests {
 			"\t\"applicationName\" : \"applicationName\"\n" +
 			"}";
 
+	String expectedResultGetRequest = "[ {\n" +
+			"  \"address\" : \"http://host:port\",\n" +
+			"  \"isFree\" : \"Yes\",\n" +
+			"  \"idSession\" : \" \",\n" +
+			"  \"applicationName\" : \"applicationName\",\n" +
+			"  \"timeout\" : \"60\"\n" +
+			"} ]";
+
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -40,13 +48,16 @@ class NodeTests {
 		content = resultPostRequest.getResponse().getContentAsString();
 		Assertions.assertEquals("The node has been registered successfully. The name - \"applicationName\"", content);
 
-		MvcResult resultGetRequest = this.mockMvc.perform(get("/api/get/nodes"))
+		MvcResult resultGetRequest = this.mockMvc.perform(get("/status"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andReturn();
 
 		content = resultGetRequest.getResponse().getContentAsString();
-		String expectedResultGetRequest = "[{\"address\":\"http://host:port\",\"isFree\":\"Yes\",\"idSession\":\" \",\"applicationName\":\"applicationName\"}]";
+
+		//Нормализация из LF в CRLF. При возникновении ошибок (например, при тестировании в Linux) - убрать.
+		content = content.replaceAll("\\r\\n", "\n");
+		content = content.replaceAll("\\r", "\n");
 		Assertions.assertEquals(content, expectedResultGetRequest);
 	}
 
