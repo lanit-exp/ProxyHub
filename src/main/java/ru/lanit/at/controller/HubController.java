@@ -86,7 +86,7 @@ public class HubController {
             workNode.get().getTimer().cancel();
         }
 
-        workNode.get().setTimeout(60);
+        workNode.get().setTimeout(NodeController.getTimeout());
 
         if(!response.getBody().isEmpty()) {
             return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
@@ -266,7 +266,7 @@ public class HubController {
             Map<String, String> element = new HashMap<>();
             element.put("applicationName", node.getKey());
             element.put("address", node.getValue().getAddress());
-            element.put("timeout", node.getValue().getTimeout());
+            element.put("timeout", String.valueOf(NodeController.getTimeout()));
 
             if(node.getValue().isFree()) {
                 element.put("isFree", "Yes");

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.lanit.at.controller.NodeController;
 
 import java.util.Objects;
 import java.util.Timer;
@@ -53,7 +54,7 @@ public class Node {
     }
 
     public void startTimer() {
-        timeout.set(60);
+        timeout.set(NodeController.getTimeout());
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
