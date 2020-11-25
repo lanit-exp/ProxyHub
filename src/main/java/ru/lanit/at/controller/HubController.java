@@ -139,27 +139,33 @@ public class HubController {
     }
 
     public String startNode(HttpResponse<String> response, Node node) {
-        JSONObject responseBody = new JSONObject(response.getBody());
+        JSONObject responseBody;
+        try {
+            responseBody = new JSONObject(response.getBody());
 
-        String id;
+            String id;
 
-        if(responseBody.has("sessionId")) {
-            id = responseBody.get("sessionId").toString();
-        } else {
-            if(responseBody.has("value")) {
-                JSONObject value = (JSONObject) responseBody.get("value");
-                id = value.getString("sessionId");
+            if(responseBody.has("sessionId")) {
+                id = responseBody.get("sessionId").toString();
             } else {
-                id = UUID.randomUUID().toString().replace("-", "");
+                if(responseBody.has("value")) {
+                    JSONObject value = (JSONObject) responseBody.get("value");
+                    id = value.getString("sessionId");
+                } else {
+                    id = UUID.randomUUID().toString().replace("-", "");
+                }
             }
+
+            node.setIdSession(id);
+            node.startTimer();
+
+            logger.info(String.format("Start session with sessionId = %s and parameters: %s",
+                    node.getIdSession(),
+                    responseBody.toString()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
         }
-
-        node.setIdSession(id);
-        node.startTimer();
-
-        logger.info(String.format("Start session with sessionId = %s and parameters: %s",
-                node.getIdSession(),
-                responseBody.toString()));
 
         return responseBody.toString();
     }

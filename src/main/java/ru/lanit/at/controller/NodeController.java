@@ -87,13 +87,17 @@ public class NodeController {
     @RequestMapping(value = "/set/timeout/{value}", method = RequestMethod.GET)
     @ApiOperation(value = "Изменение значения параметра таймаута.")
     public ResponseEntity<String> setTimeout(@PathVariable int value) {
-        this.timeout = value;
+        if(value >= 0) {
+            timeout = value;
 
-        for(Node x : nodes.getNodeConcurrentHashMap().values()) {
-            x.setTimeout(value);
+            for(Node x : nodes.getNodeConcurrentHashMap().values()) {
+                x.setTimeout(value);
+            }
+
+            return new ResponseEntity<>(String.format("Set timeout value %s", value), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(String.format("Abort operation. The value %s is less than 0.", value), HttpStatus.OK);
         }
-
-        return new ResponseEntity<>(String.format("Set timeout value %s", value), HttpStatus.OK);
     }
 
     public static int getTimeout() {
