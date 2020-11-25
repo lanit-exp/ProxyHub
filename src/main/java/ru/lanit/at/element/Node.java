@@ -57,7 +57,7 @@ public class Node {
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                if (timeout.get() < 0) {
+                if (timeout.get() <= 0) {
                     logger.info("Освобождение ресурсов по таймауту.");
                     clearInfo();
                     timer.cancel();
@@ -88,6 +88,7 @@ public class Node {
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
         String jsonString = "";
         try {
@@ -98,14 +99,6 @@ public class Node {
         }
 
         return jsonString;
-    }
-
-    public String getString() {
-        return "Node {" +
-                "address='" + address + '\'' +
-                ", free=" + free +
-                ", idSession='" + idSession + '\'' +
-                '}';
     }
 
     @Override
