@@ -126,7 +126,11 @@ public class HubController {
             String method = request.getMethod();
 
             if(node.isPresent()) {
-                response = getResponse(method, request, body, node.get().getAddress(), uri);
+                try {
+                    response = getResponse(method, request, body, node.get().getAddress(), uri);
+                } catch (Exception e) {
+                    return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             } else {
                 return new ResponseEntity<>("List is empty or all nodes are busy.", HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -146,7 +150,7 @@ public class HubController {
             String id;
 
             if(responseBody.has("sessionId")) {
-                id = responseBody.get("sessionId").toString();
+                id = responseBody.getString("sessionId");
             } else {
                 if(responseBody.has("value")) {
                     JSONObject value = (JSONObject) responseBody.get("value");
