@@ -22,14 +22,14 @@ class NodeTests {
 	private final String body = "{\n" +
 			"\t\"host\" : \"host\",\n" +
 			"\t\"port\" : \"port\",\n" +
-			"\t\"applicationName\" : \"applicationName\"\n" +
+			"\t\"nodeName\" : \"nodeName\"\n" +
 			"}";
 
 	String expectedResultGetRequest = "[ {\n" +
+			"  \"nodeName\" : \"nodeName\",\n" +
 			"  \"address\" : \"http://host:port\",\n" +
 			"  \"isFree\" : \"Yes\",\n" +
 			"  \"idSession\" : \" \",\n" +
-			"  \"applicationName\" : \"applicationName\",\n" +
 			"  \"timeout\" : \"60\"\n" +
 			"} ]";
 
@@ -46,7 +46,7 @@ class NodeTests {
 				.andReturn();
 
 		content = resultPostRequest.getResponse().getContentAsString();
-		Assertions.assertEquals("The node has been registered successfully. The name - \"applicationName\"", content);
+		Assertions.assertEquals("The node has been registered successfully. The name - \"nodeName\"", content);
 
 		MvcResult resultGetRequest = this.mockMvc.perform(get("/status"))
 				.andDo(print())
@@ -71,7 +71,7 @@ class NodeTests {
 				.andReturn();
 
 		content = resultPostRequest.getResponse().getContentAsString();
-		Assertions.assertEquals("The node has been registered successfully. The name - \"applicationName\"", content);
+		Assertions.assertEquals("The node has been registered successfully. The name - \"nodeName\"", content);
 
 		MvcResult resultGetRequest = this.mockMvc.perform(get("/api/delete/nodes"))
 				.andDo(print())
@@ -92,15 +92,15 @@ class NodeTests {
 				.andReturn();
 
 		content = resultPostRequest.getResponse().getContentAsString();
-		Assertions.assertEquals("The node has been registered successfully. The name - \"applicationName\"", content);
+		Assertions.assertEquals("The node has been registered successfully. The name - \"nodeName\"", content);
 
-		MvcResult resultGetRequest = this.mockMvc.perform(get("/api/delete/node/applicationName"))
+		MvcResult resultGetRequest = this.mockMvc.perform(get("/api/delete/node/nodeName"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andReturn();
 
 		content = resultGetRequest.getResponse().getContentAsString();
-		Assertions.assertEquals("Information about node applicationName has been deleted.", content);
+		Assertions.assertEquals("Information about node nodeName has been deleted.", content);
 	}
 
 	@Test

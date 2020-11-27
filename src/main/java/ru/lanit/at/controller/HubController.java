@@ -111,11 +111,11 @@ public class HubController {
             JSONObject jsonObject = new JSONObject(body);
             JSONObject desiredCapabilities = (JSONObject) jsonObject.get("desiredCapabilities");
 
-            if(desiredCapabilities.has("applicationName")) {
-                node = getNamedNode(desiredCapabilities.getString("applicationName"));
+            if(desiredCapabilities.has("nodeName")) {
+                node = getNamedNode(desiredCapabilities.getString("nodeName"));
 
                 if (!node.isPresent()) {
-                    return new ResponseEntity<>(String.format("Node %s not found in list", desiredCapabilities.get("applicationName")),
+                    return new ResponseEntity<>(String.format("Node %s not found in list", desiredCapabilities.get("nodeName")),
                             HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             } else {
@@ -129,6 +129,8 @@ public class HubController {
                 try {
                     response = getResponse(method, request, body, node.get().getAddress(), uri);
                 } catch (Exception e) {
+                    node.get().getTimer().cancel();
+                    node.get().setFree(true);
                     return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             } else {
@@ -167,6 +169,8 @@ public class HubController {
                     node.getIdSession(),
                     responseBody.toString()));
         } catch (Exception e) {
+            node.getTimer().cancel();
+            node.setFree(true);
             e.printStackTrace();
             return e.getMessage();
         }
@@ -268,7 +272,7 @@ public class HubController {
 
         for (Map.Entry<String, Node> node : nodes.getNodeConcurrentHashMap().entrySet()) {
             Map<String, String> element = new HashMap<>();
-            element.put("applicationName", node.getKey());
+            element.put("nodeName", node.getKey());
             element.put("address", node.getValue().getAddress());
             element.put("timeout", String.valueOf(NodeController.getTimeout()));
 

@@ -34,7 +34,7 @@ public class NodeController {
     @RequestMapping(value = "/register/node", method = RequestMethod.POST,
             headers="content-type=application/json;charset=UTF-8",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Регистрация узла через отправку JSON. При желании можно указать имя узла через параметр \"applicationName\".")
+    @ApiOperation(value = "Регистрация узла через отправку JSON. При желании можно указать имя узла через параметр \"nodeName\".")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "The node has been registered successfully.", response = String.class),
             @ApiResponse(code = 500, message = "Error", response = String.class),
@@ -58,8 +58,8 @@ public class NodeController {
             String address = String.format("http://%s:%s", jsonBody.get("host"), jsonBody.get("port"));
             Node node = new Node(address, timeout);
 
-            if(jsonBody.has("applicationName")) {
-                name = jsonBody.getString("applicationName");
+            if(jsonBody.has("nodeName")) {
+                name = jsonBody.getString("nodeName");
             } else {
                 name = UUID.randomUUID().toString().replace("-", "");
             }
@@ -78,7 +78,7 @@ public class NodeController {
     }
 
     @RequestMapping(value = "/delete/node/{name}", method = RequestMethod.GET)
-    @ApiOperation(value = "Удаление информации об определенном узле. В качестве параметра используется \"applicationName\" узла.")
+    @ApiOperation(value = "Удаление информации об определенном узле. В качестве параметра используется \"nodeName\" узла.")
     public ResponseEntity<String> deleteNodes(@PathVariable String name) {
         nodes.getNodeConcurrentHashMap().remove(name);
         return new ResponseEntity<>(String.format("Information about node %s has been deleted.", name), HttpStatus.OK);
