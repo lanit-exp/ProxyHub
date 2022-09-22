@@ -1,30 +1,29 @@
-package ru.lanit.at.element;
+package ru.lanit.at.node;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.lanit.at.controller.NodeController;
+import ru.lanit.at.utils.CommonUtils;
 
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@JsonFilter("nodeFilter")
 public class Node {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private String address;
     private boolean free;
     private String idSession;
     private Timer timer;
-    private AtomicInteger timeout;
+    private final AtomicInteger timeout;
 
     public Node(String address, int timeout) {
         this.address = address;
         this.free = true;
-        this.idSession = " ";
+        this.idSession = "";
         this.timer = new Timer();
         this.timeout = new AtomicInteger(timeout);
     }
@@ -53,8 +52,9 @@ public class Node {
         this.address = address;
     }
 
+    /*TODO - maybe it doesn't work*/
     public void startTimer() {
-        timeout.set(NodeController.getTimeout());
+        timeout.set(CommonUtils.RESOURCE_TIMEOUT.get());
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
@@ -71,11 +71,15 @@ public class Node {
 
     private void clearInfo() {
         this.setFree(true);
-        this.setIdSession(" ");
+        this.setIdSession("");
     }
 
     public void setTimeout(int timeout) {
         this.timeout.set(timeout);
+    }
+
+    public void increaseTimeout(int value) {
+        this.timeout.addAndGet(value);
     }
 
     public String getTimeout() {
@@ -84,22 +88,6 @@ public class Node {
 
     public Timer getTimer() {
         return timer;
-    }
-
-    @Override
-    public String toString() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-
-        String jsonString = "";
-        try {
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            jsonString = mapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return jsonString;
     }
 
     @Override
@@ -115,5 +103,15 @@ public class Node {
     @Override
     public int hashCode() {
         return Objects.hash(address, free, idSession);
+    }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "address='" + address + '\'' +
+                ", free=" + free +
+                ", idSession='" + idSession + '\'' +
+                ", timeout=" + timeout +
+                '}';
     }
 }

@@ -1,7 +1,7 @@
 nodes:
-  - LocalDriver:
+  - LocalDriver1:
       host: localhost
       port: 8100
-  - RemoteDriver:
-      host: 192.168.88.127
-      port: 8100
+  - LocalDriver2:
+      host: localhost
+      port: 8101

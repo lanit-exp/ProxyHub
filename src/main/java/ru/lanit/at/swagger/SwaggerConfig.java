@@ -25,8 +25,7 @@ public class SwaggerConfig {
                     .build();
     }
 
-    private ApiInfo apiInfo()
-    {
+    private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Swagger")
                 .description("Swagger for remote hub")

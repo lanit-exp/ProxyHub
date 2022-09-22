@@ -5,3 +5,7 @@ spring:
   jackson:
     serialization:
       indent_output: true
+
+node:
+  list:
+    file: "./nodes.yaml"

@@ -1,4 +1,4 @@
-package ru.lanit.at.service;
+package ru.lanit.at.api.impl;
 
 import kong.unirest.GetRequest;
 import kong.unirest.HttpRequestWithBody;
@@ -7,22 +7,22 @@ import kong.unirest.Unirest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import ru.lanit.at.api.RequestService;
 
 import java.util.Map;
 
 @Service
-public class RequestService {
+public class RequestServiceImpl implements RequestService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public HttpResponse<String> doPost(Map<String, String> headers, String body, String url, String uri) {
-        HttpRequestWithBody request = Unirest.post(url + uri);
+        HttpRequestWithBody request = Unirest.request("post",url + uri);
 
         headers.remove("path");
         headers.remove("content-length");
 
-        for(Map.Entry<String, String> x : headers.entrySet()) {
-            request.header(x.getKey(), x.getValue());
-        }
+
+        request.headers(headers);
 
         return request.body(body).asString();
     }
