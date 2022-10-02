@@ -1,12 +1,10 @@
 package ru.lanit.at.node;
 
-import kong.unirest.HttpResponse;
-
 import java.util.Map;
 import java.util.Optional;
 
 public interface NodeService {
-    String takeNode(HttpResponse<String> response, Node node);
+    String takeNode(String response, Node node);
 
     Map<String, Node> getNodes();
 

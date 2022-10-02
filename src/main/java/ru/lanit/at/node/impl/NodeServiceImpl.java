@@ -3,10 +3,12 @@ package ru.lanit.at.node.impl;
 import kong.unirest.HttpResponse;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
+import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.yaml.snakeyaml.Yaml;
 import ru.lanit.at.node.Node;
@@ -16,6 +18,9 @@ import ru.lanit.at.utils.CommonUtils;
 import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
@@ -44,7 +49,6 @@ public class NodeServiceImpl implements NodeService {
             Map<String, Object> elements = yaml.load(StreamUtils.copyToString(in, StandardCharsets.UTF_8));
 
             JSONArray nodes = new JSONArray(elements.get("nodes").toString());
-            logger.info("Start hub with nodes: " + nodes);
 
             for(Object nodeObject : nodes) {
                 JSONObject node = (JSONObject) nodeObject;
@@ -57,9 +61,28 @@ public class NodeServiceImpl implements NodeService {
                     String address = String.format("http://%s:%s", data.getString("host"),
                             data.getString("port"));
 
-                    getNodes().put(temp, new Node(address, CommonUtils.RESOURCE_TIMEOUT.get()));
+                    try {
+                        URL url = new URL(address + "/health");
+                        HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+                        urlConn.connect();
+
+                        if (urlConn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                            logger.info(String.valueOf(urlConn.getResponseCode()));
+                            logger.error("Connection is not established");
+                        } else {
+                            logger.info(String.format("Connection with %s is established", address));
+                            getNodes().put(temp, new Node(address, CommonUtils.RESOURCE_TIMEOUT.get()));
+                        }
+
+                        urlConn.disconnect();
+                    } catch (IOException e) {
+                        logger.error("Error creating HTTP connection");
+                        e.printStackTrace();
+                    }
                 }
             }
+
+            logger.info("Start hub with nodes: " + getNodes());
         } catch(FileNotFoundException ex) {
             logger.warn("The file nodes.yaml is missing. You need to check its location or register nodes via API request.");
         } catch (Exception e) {
@@ -68,10 +91,10 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
-    public String takeNode(HttpResponse<String> response, Node node) {
+    public String takeNode(String response, Node node) {
         JSONObject responseBody;
         try {
-            responseBody = new JSONObject(response.getBody());
+            responseBody = new JSONObject(response);
 
             String id;
 

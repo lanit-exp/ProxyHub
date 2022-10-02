@@ -9,3 +9,10 @@ spring:
 node:
   list:
     file: "./nodes.yaml"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: "/"

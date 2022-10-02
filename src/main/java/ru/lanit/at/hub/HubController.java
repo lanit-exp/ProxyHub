@@ -1,4 +1,4 @@
-package ru.lanit.at.timer;
+package ru.lanit.at.hub;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.lanit.at.utils.CommonUtils;
 
 @RestController
-@RequestMapping(value = "/timeout")
-public class TimeoutController {
+@RequestMapping(value = "/hub")
+public class HubController {
     @RequestMapping(value = "/set/{value}", method = RequestMethod.GET)
     @ApiOperation(value = "Изменение значения параметра таймаута.")
     public ResponseEntity<String> setTimeout(@PathVariable int value) {
