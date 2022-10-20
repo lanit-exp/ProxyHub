@@ -1,4 +1,4 @@
-package ru.lanit.at.hub;
+package ru.lanit.at.controller;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import ru.lanit.at.utils.CommonUtils;
+import ru.lanit.at.util.CommonUtils;
 
 @RestController
 @RequestMapping(value = "/hub")

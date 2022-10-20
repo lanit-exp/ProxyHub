@@ -1,4 +1,4 @@
-package ru.lanit.at.utils;
+package ru.lanit.at.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

@@ -1,4 +1,4 @@
-package ru.lanit.at.proxy;
+package ru.lanit.at.controller;
 
 import io.swagger.annotations.ApiOperation;
 import kong.unirest.json.JSONObject;

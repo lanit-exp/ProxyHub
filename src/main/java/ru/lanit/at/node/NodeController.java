@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import ru.lanit.at.utils.CommonUtils;
+import ru.lanit.at.util.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;

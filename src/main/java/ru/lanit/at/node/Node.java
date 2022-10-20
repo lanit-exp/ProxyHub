@@ -3,7 +3,7 @@ package ru.lanit.at.node;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.lanit.at.utils.CommonUtils;
+import ru.lanit.at.util.CommonUtils;
 
 import java.util.Objects;
 import java.util.Timer;

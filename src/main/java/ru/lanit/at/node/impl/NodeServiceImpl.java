@@ -1,19 +1,16 @@
 package ru.lanit.at.node.impl;
 
-import kong.unirest.HttpResponse;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
-import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.yaml.snakeyaml.Yaml;
 import ru.lanit.at.node.Node;
 import ru.lanit.at.node.NodeService;
-import ru.lanit.at.utils.CommonUtils;
+import ru.lanit.at.util.CommonUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
@@ -76,8 +73,7 @@ public class NodeServiceImpl implements NodeService {
 
                         urlConn.disconnect();
                     } catch (IOException e) {
-                        logger.error("Error creating HTTP connection");
-                        e.printStackTrace();
+                        logger.error("Error creating HTTP connection with {}", address);
                     }
                 }
             }
