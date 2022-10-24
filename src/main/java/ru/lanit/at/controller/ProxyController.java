@@ -1,9 +1,7 @@
 package ru.lanit.at.controller;
 
-import io.swagger.annotations.ApiOperation;
 import kong.unirest.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.lanit.at.rest.RequestService;
 import ru.lanit.at.node.Node;
 import ru.lanit.at.node.NodeService;
+import ru.lanit.at.util.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -35,7 +34,6 @@ public class ProxyController {
     }
 
     @RequestMapping(value = "/session", method = RequestMethod.POST)
-    @ApiOperation(value = "Старт сессии.")
     public ResponseEntity<?> startSession(HttpServletRequest request) {
         if(nodeService.getNodes().isEmpty()) {
             return new ResponseEntity<>("List of nodes is empty!",
@@ -47,8 +45,7 @@ public class ProxyController {
 
     @RequestMapping(value = {"/**"},
             method = {RequestMethod.POST, RequestMethod.GET, RequestMethod.DELETE})
-    @ApiOperation(value = "Отправка запроса в proxy driver.")
-    public ResponseEntity<?> proxyRequest(@Context HttpServletRequest request) {
+    public ResponseEntity<?> proxyRequest(HttpServletRequest request) {
         String url;
         String uri = request.getRequestURI();
         String body = "";
@@ -88,7 +85,7 @@ public class ProxyController {
             if ("DELETE".equalsIgnoreCase(method)) {
                 nodeService.releaseNode(workNode);
             } else {
-                workNode.increaseTimeout(10);
+                workNode.setTimeout(CommonUtils.RESOURCE_TIMEOUT.get());
             }
         } catch (Exception e) {
             nodeService.releaseNode(workNode);

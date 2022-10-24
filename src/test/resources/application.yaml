@@ -1,0 +1,18 @@
+server:
+  port: 4444
+
+spring:
+  jackson:
+    serialization:
+      indent_output: true
+
+node:
+  list:
+    file: ""
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: "/"

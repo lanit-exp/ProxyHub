@@ -3,11 +3,7 @@ package ru.lanit.at.node;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import kong.unirest.json.JSONObject;
-import org.mapstruct.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,7 +33,6 @@ public class NodeController {
     }
 
     @RequestMapping(value = "/status", method = RequestMethod.GET)
-    @ApiOperation(value = "Получение информации о текущих узлах.")
     public ResponseEntity<?> getNodes() {
         SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.serializeAllExcept("timer");
         FilterProvider filterProvider = new SimpleFilterProvider().addFilter("nodeFilter", filter);
@@ -51,13 +46,7 @@ public class NodeController {
     @RequestMapping(value = "/register", method = RequestMethod.POST,
             headers="content-type=application/json;charset=UTF-8",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Регистрация узла через отправку JSON. При желании можно указать имя узла через параметр \"nodeName\".")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The node has been registered successfully.", response = String.class),
-            @ApiResponse(code = 500, message = "Error", response = String.class),
-            @ApiResponse(code = 400, message = "Host and/or port is missing.", response = String.class)
-    })
-    public ResponseEntity<String> registerNode(@Context HttpServletRequest request) {
+    public ResponseEntity<String> registerNode(HttpServletRequest request) {
         String body;
 
         try (BufferedReader reader = request.getReader()) {
@@ -88,14 +77,12 @@ public class NodeController {
     }
 
     @RequestMapping(value = "/clear", method = RequestMethod.GET)
-    @ApiOperation(value = "Удаление информации о текущих узлах.")
     public ResponseEntity<String> deleteAllNodes() {
         nodeService.getNodes().clear();
         return new ResponseEntity<>("Information has been deleted.", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/delete/{name}", method = RequestMethod.GET)
-    @ApiOperation(value = "Удаление информации об определенном узле. В качестве параметра используется \"nodeName\" узла.")
     public ResponseEntity<String> deleteNodes(@PathVariable String name) {
         nodeService.getNodes().remove(name);
         return new ResponseEntity<>(String.format("Information about node %s has been deleted.", name), HttpStatus.OK);

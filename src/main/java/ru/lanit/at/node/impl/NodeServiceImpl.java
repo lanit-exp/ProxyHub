@@ -13,6 +13,7 @@ import ru.lanit.at.node.NodeService;
 import ru.lanit.at.util.CommonUtils;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,6 +41,15 @@ public class NodeServiceImpl implements NodeService {
 
     @PostConstruct
     public void readNodeListFromFile() {
+
+        boolean isNodeListFileExist = new File(nodeListFile).exists();
+
+        if (isNodeListFileExist) {
+            readNodesList();
+        }
+    }
+
+    public void readNodesList() {
         Yaml yaml = new Yaml();
 
         try (FileInputStream in = new FileInputStream(nodeListFile)) {

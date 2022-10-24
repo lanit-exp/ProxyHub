@@ -1,0 +1,5 @@
+{
+  "host" : "host",
+  "port": "port",
+  "nodeName": "nodeName"
+}

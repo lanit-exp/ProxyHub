@@ -5,8 +5,8 @@
 
 ## Регистрация узлов
 
-Для регистрации узлов необходимо отправить запрос по адресу http://host:port/register/node
-(например http://localhost:4444/api/register/node) с JSON, в котором содержатся основные параметры ноды.
+Для регистрации узлов необходимо отправить запрос по адресу http://host:port/register
+(например http://localhost:4444/node/register) с JSON, в котором содержатся основные параметры ноды.
 Пример JSON:
 
 ```
@@ -22,7 +22,7 @@
 обязательно необходимо, чтобы данный файл находился в той же директории, что и само приложение.
 
 Получить информацию о всех узлах можно, отправив GET-запрос по адресу 
-http://host:port/status (например http://localhost:4444/status).
+http://host:port/node/status (например http://localhost:4444/node/status).
 
 ## Управление узлами
 При необходимости запуска тестов на определенном узле, необходимо добавить в capabilities веб драйвера параметр 
@@ -33,16 +33,9 @@ http://host:port/status (например http://localhost:4444/status).
 этого необходимо зарегистрировать узел, указав адрес, порт и, обязательно, имя узла. После этого, добавляем в capabilities веб драйвера параметр 
 "nodeName", указав в нем его имя.
 
-[comment]: <> (## Swagger)
-
-[comment]: <> (В случае успешного запуска программы по адресу )
-
-[comment]: <> (    http://localhost:4444/swagger-ui.html)
-
-[comment]: <> (будет доступен Swagger.)
-
 ## API
-* ```POST: /api/register/node```
-* ```GET: /api/delete/nodes```
-* ```GET: /api/delete/node/{name}```
-* ```GET: /api/set/timeout/{value}```
+* ```POST: /node/register``` - регистрация узла
+* ```POST: /node/status``` - статус по текущим узлам
+* ```GET: /node/clear``` - удалить все узлы
+* ```GET: /node/delete/{name}``` - удалить узел по имени
+* ```GET: /hub/timeout/set/{value}``` - задать величину таймаута в секундах
