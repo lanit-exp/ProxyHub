@@ -16,14 +16,14 @@ public class Node {
 
     private String address;
     private boolean free;
-    private String idSession;
+    private String sessionId;
     private Timer timer;
     private final AtomicInteger timeout;
 
     public Node(String address, int timeout) {
         this.address = address;
         this.free = true;
-        this.idSession = "";
+        this.sessionId = "";
         this.timer = new Timer();
         this.timeout = new AtomicInteger(timeout);
     }
@@ -36,12 +36,12 @@ public class Node {
         this.free = free;
     }
 
-    public String getIdSession() {
-        return idSession;
+    public String getSessionId() {
+        return sessionId;
     }
 
-    public void setIdSession(String idSession) {
-        this.idSession = idSession;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     public String getAddress() {
@@ -58,7 +58,8 @@ public class Node {
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                if (timeout.get() <= 0) {
+                logger.info(address + " - " + sessionId + " - " + timeout.get());
+                if (timeout.get() < 1) {
                     logger.info("Освобождение ресурсов по таймауту.");
                     clearInfo();
                     timer.cancel();
@@ -71,7 +72,7 @@ public class Node {
 
     private void clearInfo() {
         this.setFree(true);
-        this.setIdSession("");
+        this.setSessionId("");
     }
 
     public void setTimeout(int timeout) {
@@ -97,12 +98,12 @@ public class Node {
         Node node = (Node) o;
         return free == node.free &&
                 Objects.equals(address, node.address) &&
-                Objects.equals(idSession, node.idSession);
+                Objects.equals(sessionId, node.sessionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, free, idSession);
+        return Objects.hash(address, free, sessionId);
     }
 
     @Override
@@ -110,7 +111,7 @@ public class Node {
         return "Node{" +
                 "address='" + address + '\'' +
                 ", free=" + free +
-                ", idSession='" + idSession + '\'' +
+                ", sessionId='" + sessionId + '\'' +
                 ", timeout=" + timeout +
                 '}';
     }

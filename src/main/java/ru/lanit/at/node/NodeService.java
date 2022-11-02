@@ -14,6 +14,8 @@ public interface NodeService {
 
     Node getNodeByName(String name);
 
+    Optional<Node> getNodeBySessionId(String sessionId);
+
     Node getFreeNode();
 
     Optional<Node> getWorkedNode(String uri);

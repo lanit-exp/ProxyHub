@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.lanit.at.rest.RequestService;
+import ru.lanit.at.rest.RestApiService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
@@ -15,7 +15,7 @@ import java.util.Enumeration;
 @Slf4j
 @AllArgsConstructor
 @Service
-public class RequestServiceImpl implements RequestService {
+public class RestApiServiceImpl implements RestApiService {
     private final RestTemplate restTemplate;
 
     public String executeRequest(String method, HttpServletRequest request, String body, String url, String uri) {
@@ -23,8 +23,7 @@ public class RequestServiceImpl implements RequestService {
         setHeaders(request, headers);
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
-        log.info("Request URL to: {}", url + uri);
-        return restTemplate.exchange(url + uri, HttpMethod.valueOf(method), entity, String.class).getBody();
+        return getResponseBody(url, uri, method, entity, request);
     }
 
     public String executeRequest(String method, HttpServletRequest request, String url, String uri) {
@@ -32,8 +31,26 @@ public class RequestServiceImpl implements RequestService {
         setHeaders(request, headers);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        log.info("Request to: {}", url + uri);
-        return restTemplate.exchange(url + uri, HttpMethod.valueOf(method), entity, String.class).getBody();
+        return getResponseBody(url, uri, method, entity, request);
+    }
+
+    public String executeRequest(String method, String url, String uri, String requestParam) {
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        return getResponseBody (url, uri, method, entity, requestParam);
+    }
+
+    public String getResponseBody(String url, String uri, String method, HttpEntity<String> entity, HttpServletRequest request) {
+        String queryString = request.getQueryString();
+        return getResponseBody(url, uri, method, entity, queryString);
+    }
+
+    public String getResponseBody(String url, String uri, String method, HttpEntity<String> entity, String requestParam) {
+        log.info("Request to: {}", url + uri + (requestParam != null ? "?" + requestParam : ""));
+
+        return restTemplate.exchange(String.format("%s%s%s", url, uri, (requestParam != null ? "?" + requestParam : "")),
+                HttpMethod.valueOf(method), entity, String.class).getBody();
     }
 
     private void setHeaders(HttpServletRequest request, HttpHeaders headers) {

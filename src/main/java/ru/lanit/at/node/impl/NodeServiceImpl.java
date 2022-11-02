@@ -4,12 +4,14 @@ import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.yaml.snakeyaml.Yaml;
 import ru.lanit.at.node.Node;
 import ru.lanit.at.node.NodeService;
+import ru.lanit.at.rest.RestApiService;
 import ru.lanit.at.util.CommonUtils;
 
 import javax.annotation.PostConstruct;
@@ -30,12 +32,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NodeServiceImpl implements NodeService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
+    private final RestApiService restApiService;
+
     @Value("${node.list.file}")
     private String nodeListFile;
 
     private final Map<String, Node> nodes;
 
-    public NodeServiceImpl() {
+    @Autowired
+    public NodeServiceImpl(RestApiService restApiService) {
+        this.restApiService = restApiService;
+
         nodes = new ConcurrentHashMap<>();
     }
 
@@ -115,14 +122,14 @@ public class NodeServiceImpl implements NodeService {
                 }
             }
 
-            node.setIdSession(id);
+            node.setSessionId(id);
             node.startTimer();
 
             logger.info(String.format("Start session with sessionId %s and parameters: %s",
-                    node.getIdSession(),
-                    responseBody.toString()));
+                    node.getSessionId(),
+                    responseBody));
         } catch (Exception e) {
-            node.getTimer().cancel();
+            node.setTimeout(0);
             node.setFree(true);
 
             e.printStackTrace();
@@ -162,6 +169,13 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
+    public Optional<Node> getNodeBySessionId(String sessionId) {
+        return getNodes().values().stream()
+                .filter(node -> node.getSessionId().equals(sessionId))
+                .findFirst();
+    }
+
+    @Override
     public synchronized Node getFreeNode() {
         Node node;
 
@@ -182,17 +196,17 @@ public class NodeServiceImpl implements NodeService {
     }
 
     public Optional<Node> getWorkedNode(String uri) {
-        return getNodes()
-                .values()
-                .stream()
-                .filter(element -> uri.contains(element.getIdSession()))
+        return getNodes().values().stream()
+                .filter(element -> uri.contains(element.getSessionId()))
                 .findFirst();
     }
 
     @Override
     public void releaseNode(Node node) {
+        restApiService.executeRequest("GET", node.getAddress(), "/rest/api/v1/release-connections", null);
+
         node.setFree(true);
-        node.setIdSession("");
-        node.getTimer().cancel();
+        node.setSessionId("");
+        node.setTimeout(0);
     }
 }

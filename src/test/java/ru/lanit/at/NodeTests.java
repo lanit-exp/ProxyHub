@@ -53,8 +53,6 @@ class NodeTests {
 				.andReturn();
 
 		content = resultGetRequest.getResponse().getContentAsString();
-		log.info("Content1 {}", content);
-		log.info("Content2 {}", ResourceUtils.asString(expectedResultGetRequest));
 
 		//Нормализация из LF в CRLF. При возникновении ошибок (например, при тестировании в Linux) - убрать.
 		content = content.replaceAll("\\r\\n", "\n");

@@ -23,7 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "/node")
+@RequestMapping(value = "/rest/api/v1/node")
 public class NodeController {
     private final NodeService nodeService;
 

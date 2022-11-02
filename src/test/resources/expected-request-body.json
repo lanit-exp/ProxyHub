@@ -2,7 +2,7 @@
   "nodeName" : {
     "address" : "http://host:port",
     "free" : true,
-    "idSession" : "",
+    "sessionId" : "",
     "timeout" : "60"
   }
 }
