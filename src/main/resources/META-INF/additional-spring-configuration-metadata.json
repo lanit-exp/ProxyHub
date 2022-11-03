@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "node.list.file",
+      "type": "java.lang.String",
+      "description": "Path to list of nodes."
+    }
+  ]
+}

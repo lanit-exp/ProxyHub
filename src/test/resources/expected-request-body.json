@@ -1,0 +1,8 @@
+{
+  "nodeName" : {
+    "address" : "http://host:port",
+    "free" : true,
+    "sessionId" : "",
+    "timeout" : "60"
+  }
+}

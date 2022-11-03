@@ -8,7 +8,7 @@ spring:
 
 node:
   list:
-    file: "./nodes.yaml"
+    file: ""
 
 management:
   endpoints:
