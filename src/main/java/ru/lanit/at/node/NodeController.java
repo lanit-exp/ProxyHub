@@ -62,7 +62,7 @@ public class NodeController {
             return new ResponseEntity<>("Host and/or port is missing.", HttpStatus.BAD_REQUEST);
         } else {
             String address = String.format("http://%s:%s", jsonBody.get("host"), jsonBody.get("port"));
-            Node node = new Node(address, CommonUtils.RESOURCE_TIMEOUT.get());
+            Node node = new Node(address);
 
             if(jsonBody.has("nodeName")) {
                 name = jsonBody.getString("nodeName");

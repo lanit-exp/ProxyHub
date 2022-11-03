@@ -14,7 +14,7 @@ public class RestApiController {
     @RequestMapping(value = "/timeout/set/{value}", method = RequestMethod.GET)
     public ResponseEntity<String> setTimeout(@PathVariable int value) {
         if(value >= 0) {
-            CommonUtils.RESOURCE_TIMEOUT.set(value);
+            CommonUtils.RESOURCE_TIMEOUT.set(value * 1000L);
             return new ResponseEntity<>(String.format("Set timeout value %s", value), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(String.format("Abort operation. The value %s is less than 0.", value), HttpStatus.OK);

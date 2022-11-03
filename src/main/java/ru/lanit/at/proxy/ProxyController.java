@@ -39,7 +39,7 @@ public class ProxyController {
     }
 
     @RequestMapping(value = "/session", method = RequestMethod.POST)
-    public ResponseEntity<?> startSession(HttpServletRequest request) throws NodeNotFoundException, CreateSessionException {
+    public synchronized ResponseEntity<?> startSession(HttpServletRequest request) throws NodeNotFoundException, CreateSessionException {
         if(nodeService.getNodes().isEmpty()) {
             throw new NodeNotFoundException("List of nodes is empty!");
         }
@@ -69,6 +69,7 @@ public class ProxyController {
                     }
                 } else {
                     node = nodeService.getFreeNode();
+                    nodeService.releaseNode(node);
                 }
 
                 String response;
@@ -77,10 +78,10 @@ public class ProxyController {
                 try {
                     response = restApiService.executeRequest(method, request, body, node.getAddress(), "/session");
                 } catch (Exception e) {
-                    node.setFree(true);
                     throw new ProxyRestApiResponseException(e);
                 }
 
+                node.setLastActivity(System.currentTimeMillis());
                 return new ResponseEntity<>(nodeService.takeNode(response, node), HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -102,7 +103,7 @@ public class ProxyController {
                 }
             }
         } catch (IOException e) {
-            throw new ProxyRequestHandlerException();
+            throw new ProxyRequestHandlerException("Exception of body parsing");
         }
 
         Optional<Node> workNodeOptional = nodeService.getWorkedNode(uri);
@@ -126,14 +127,10 @@ public class ProxyController {
                 response = restApiService.executeRequest(method, request, body, url, uri);
             }
 
-            if ("DELETE".equalsIgnoreCase(method)) {
-                nodeService.releaseNode(workNode);
-            } else {
-                workNode.setTimeout(CommonUtils.RESOURCE_TIMEOUT.get());
-            }
+            workNode.setLastActivity(System.currentTimeMillis());
         } catch (Exception e) {
-            nodeService.releaseNode(workNode);
-
+            log.info("url - {}", url + uri);
+            log.info("body - {}", body);
             throw new ProxyRestApiResponseException(e);
         }
 

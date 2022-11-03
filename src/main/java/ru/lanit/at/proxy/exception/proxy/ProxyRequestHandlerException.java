@@ -8,4 +8,8 @@ public class ProxyRequestHandlerException extends Exception {
 
     public ProxyRequestHandlerException() {
     }
+
+    public ProxyRequestHandlerException(String message) {
+        super(message);
+    }
 }

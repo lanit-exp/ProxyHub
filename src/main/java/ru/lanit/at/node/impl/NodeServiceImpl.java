@@ -85,7 +85,7 @@ public class NodeServiceImpl implements NodeService {
                             logger.error("Connection is not established");
                         } else {
                             logger.info(String.format("Connection with %s is established", address));
-                            getNodes().put(temp, new Node(address, CommonUtils.RESOURCE_TIMEOUT.get()));
+                            getNodes().put(temp, new Node(address));
                         }
 
                         urlConn.disconnect();
@@ -123,15 +123,11 @@ public class NodeServiceImpl implements NodeService {
             }
 
             node.setSessionId(id);
-            node.startTimer();
 
             logger.info(String.format("Start session with sessionId %s and parameters: %s",
                     node.getSessionId(),
                     responseBody));
         } catch (Exception e) {
-            node.setTimeout(0);
-            node.setFree(true);
-
             e.printStackTrace();
             return e.getMessage();
         }
@@ -159,13 +155,17 @@ public class NodeServiceImpl implements NodeService {
         Node node = getNode(name);
 
         while (true) {
-            if(node.isFree()) {
-                node.setFree(false);
-                break;
+            if(checkNodeFree(node)) {
+                return node;
             }
         }
+    }
 
-        return node;
+    public boolean checkNodeFree(Node node) {
+        long lastActivity = node.getLastActivity();
+        long currentTime = System.currentTimeMillis();
+
+        return (currentTime - lastActivity) > CommonUtils.RESOURCE_TIMEOUT.get();
     }
 
     @Override
@@ -177,22 +177,15 @@ public class NodeServiceImpl implements NodeService {
 
     @Override
     public synchronized Node getFreeNode() {
-        Node node;
-
         while (true) {
-            Optional<Map.Entry<String, Node>> freeNode = getNodes().entrySet().stream()
-                    .filter(entry -> entry.getValue().isFree())
+            Optional<Node> freeNode = getNodes().values().stream()
+                    .filter(this::checkNodeFree)
                     .findFirst();
 
             if (freeNode.isPresent()) {
-                node = freeNode.get().getValue();
-                node.setFree(false);
-
-                break;
+                return freeNode.get();
             }
         }
-
-        return node;
     }
 
     public Optional<Node> getWorkedNode(String uri) {
@@ -204,9 +197,5 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public void releaseNode(Node node) {
         restApiService.executeRequest("GET", node.getAddress(), "/rest/api/v1/release-connections", null);
-
-        node.setFree(true);
-        node.setSessionId("");
-        node.setTimeout(0);
     }
 }

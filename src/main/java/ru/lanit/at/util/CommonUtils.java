@@ -1,7 +1,7 @@
 package ru.lanit.at.util;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class CommonUtils {
-    public static final AtomicInteger RESOURCE_TIMEOUT = new AtomicInteger(60);
+    public static final AtomicLong RESOURCE_TIMEOUT = new AtomicLong(30_000);
 }
