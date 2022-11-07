@@ -37,7 +37,7 @@ class NodeTests {
 
 	@Test
 	public void registerNodeAndGetInfo() throws Exception {
-		MvcResult resultPostRequest = this.mockMvc.perform(post("/node/register").contentType(
+		MvcResult resultPostRequest = this.mockMvc.perform(post("/rest/api/v1/node/register").contentType(
 				MediaType.APPLICATION_JSON)
 				.content(ResourceUtils.asString(body)))
 				.andDo(print())
@@ -47,7 +47,7 @@ class NodeTests {
 		content = resultPostRequest.getResponse().getContentAsString();
 		Assertions.assertEquals("The node has been registered successfully. The name - \"nodeName\"", content);
 
-		MvcResult resultGetRequest = this.mockMvc.perform(get("/node/status"))
+		MvcResult resultGetRequest = this.mockMvc.perform(get("/rest/api/v1/node/status"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andReturn();
@@ -62,7 +62,7 @@ class NodeTests {
 
 	@Test
 	public void deleteAllNodesAndGetResult() throws Exception {
-		MvcResult resultPostRequest = this.mockMvc.perform(post("/node/register").contentType(
+		MvcResult resultPostRequest = this.mockMvc.perform(post("/rest/api/v1/node/register").contentType(
 				MediaType.APPLICATION_JSON)
 				.content(ResourceUtils.asString(body)))
 				.andDo(print())
@@ -72,7 +72,7 @@ class NodeTests {
 		content = resultPostRequest.getResponse().getContentAsString();
 		Assertions.assertEquals("The node has been registered successfully. The name - \"nodeName\"", content);
 
-		MvcResult resultGetRequest = this.mockMvc.perform(get("/node/clear"))
+		MvcResult resultGetRequest = this.mockMvc.perform(get("/rest/api/v1/node/clear"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andReturn();
@@ -83,7 +83,7 @@ class NodeTests {
 
 	@Test
 	public void deleteNodeAndGetResult () throws Exception {
-		MvcResult resultPostRequest = this.mockMvc.perform(post("/node/register").contentType(
+		MvcResult resultPostRequest = this.mockMvc.perform(post("/rest/api/v1/node/register").contentType(
 				MediaType.APPLICATION_JSON)
 				.content(ResourceUtils.asString(body)))
 				.andDo(print())
@@ -93,7 +93,7 @@ class NodeTests {
 		content = resultPostRequest.getResponse().getContentAsString();
 		Assertions.assertEquals("The node has been registered successfully. The name - \"nodeName\"", content);
 
-		MvcResult resultGetRequest = this.mockMvc.perform(get("/node/delete/nodeName"))
+		MvcResult resultGetRequest = this.mockMvc.perform(get("/rest/api/v1/node/delete/nodeName"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andReturn();
@@ -104,7 +104,7 @@ class NodeTests {
 
 	@Test
 	public void setTimeoutTest() throws Exception {
-		MvcResult result = mockMvc.perform(get("/hub/timeout/set/120"))
+		MvcResult result = mockMvc.perform(get("/rest/api/v1/timeout/set/120"))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andReturn();
