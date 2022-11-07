@@ -38,4 +38,5 @@ http://host:port/node/status (например http://localhost:4444/node/status
 * ```POST: /rest/api/v1/node/status``` - статус по текущим узлам
 * ```GET: /rest/api/v1/node/clear``` - удалить все узлы
 * ```GET: /rest/api/v1/node/delete/{name}``` - удалить узел по имени
-* ```GET: /rest/api/v1/timeout/set/{value}``` - задать величину таймаута в секундах
+* ```GET: /rest/api/v1/timeout/set/{value}``` - задать величину таймаута для высвобождения занятого узла в секундах (в случае некорректного завершения работы со стороны фреймворка)
+  По умолчанию 10 секунд.
