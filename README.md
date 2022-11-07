@@ -34,8 +34,8 @@ http://host:port/node/status (например http://localhost:4444/node/status
 "nodeName", указав в нем его имя.
 
 ## API
-* ```POST: /node/register``` - регистрация узла
-* ```POST: /node/status``` - статус по текущим узлам
-* ```GET: /node/clear``` - удалить все узлы
-* ```GET: /node/delete/{name}``` - удалить узел по имени
-* ```GET: /hub/timeout/set/{value}``` - задать величину таймаута в секундах
+* ```POST: /rest/api/v1/node/register``` - регистрация узла
+* ```POST: /rest/api/v1/node/status``` - статус по текущим узлам
+* ```GET: /rest/api/v1/node/clear``` - удалить все узлы
+* ```GET: /rest/api/v1/node/delete/{name}``` - удалить узел по имени
+* ```GET: /rest/api/v1/timeout/set/{value}``` - задать величину таймаута в секундах
