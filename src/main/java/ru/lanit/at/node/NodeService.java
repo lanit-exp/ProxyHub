@@ -8,7 +8,7 @@ public interface NodeService {
 
     Map<String, Node> getNodes();
 
-    void setNode(String name, Node node);
+    String registerNode(String name, Node node);
 
     Node getNode(String key);
 
