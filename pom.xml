@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.lanit.at</groupId>
-    <artifactId>RemoteHub</artifactId>
+    <artifactId>ProxyHub</artifactId>
     <version>1.0</version>
 
     <properties>
@@ -100,7 +100,7 @@
     </dependencies>
 
     <build>
-        <finalName>RemoteHub-1.0-SNAPSHOT</finalName>
+        <finalName>${artifactId} v${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
