@@ -100,7 +100,7 @@
     </dependencies>
 
     <build>
-        <finalName>${artifactId} v${version}</finalName>
+        <finalName>${artifactId}-v${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
