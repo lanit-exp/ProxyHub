@@ -2,6 +2,7 @@ package ru.lanit.at;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ class NodeTests {
 	private MockMvc mockMvc;
 
 	@Test
+	@Disabled("There need mock server")
 	public void registerNodeAndGetInfo() throws Exception {
 		MvcResult resultPostRequest = this.mockMvc.perform(post("/rest/api/v1/node/register").contentType(
 				MediaType.APPLICATION_JSON)
@@ -61,6 +63,7 @@ class NodeTests {
 	}
 
 	@Test
+	@Disabled("There need mock server")
 	public void deleteAllNodesAndGetResult() throws Exception {
 		MvcResult resultPostRequest = this.mockMvc.perform(post("/rest/api/v1/node/register").contentType(
 				MediaType.APPLICATION_JSON)
@@ -82,6 +85,7 @@ class NodeTests {
 	}
 
 	@Test
+	@Disabled("There need mock server")
 	public void deleteNodeAndGetResult () throws Exception {
 		MvcResult resultPostRequest = this.mockMvc.perform(post("/rest/api/v1/node/register").contentType(
 				MediaType.APPLICATION_JSON)

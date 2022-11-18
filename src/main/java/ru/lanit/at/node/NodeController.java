@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import ru.lanit.at.util.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -70,10 +69,8 @@ public class NodeController {
                 name = UUID.randomUUID().toString().replace("-", "");
             }
 
-            nodeService.setNode(name, node);
+            return new ResponseEntity<>(nodeService.registerNode(name, node), HttpStatus.OK);
         }
-
-        return new ResponseEntity<>("The node has been registered successfully. The name - \"" + name + "\"", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/clear", method = RequestMethod.GET)
