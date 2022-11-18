@@ -5,8 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.lanit.at</groupId>
-    <artifactId>RemoteHub</artifactId>
-    <version>1.0</version>
+    <artifactId>ProxyHub</artifactId>
+    <version>1.0.0</version>
+    <name>ProxyHub</name>
+    <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -100,11 +102,15 @@
     </dependencies>
 
     <build>
-        <finalName>RemoteHub-1.0-SNAPSHOT</finalName>
+        <finalName>${artifactId}-v${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

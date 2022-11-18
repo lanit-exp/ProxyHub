@@ -75,22 +75,10 @@ public class NodeServiceImpl implements NodeService {
                     String address = String.format("http://%s:%s", data.getString("host"),
                             data.getString("port"));
 
-                    try {
-                        URL url = new URL(address + "/health");
-                        HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
-                        urlConn.connect();
+                    Node newNode = new Node(address);
 
-                        if (urlConn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                            logger.info(String.valueOf(urlConn.getResponseCode()));
-                            logger.error("Connection is not established");
-                        } else {
-                            logger.info(String.format("Connection with %s is established", address));
-                            getNodes().put(temp, new Node(address));
-                        }
-
-                        urlConn.disconnect();
-                    } catch (IOException e) {
-                        logger.error("Error creating HTTP connection with {}", address);
+                    if (checkNodeConnection(temp, newNode)) {
+                        this.nodes.put(temp, newNode);
                     }
                 }
             }
@@ -135,14 +123,44 @@ public class NodeServiceImpl implements NodeService {
         return responseBody.toString();
     }
 
+    private boolean checkNodeConnection(String name, Node node) {
+        try {
+            URL url = new URL(node.getAddress() + "/health");
+            HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+            urlConn.connect();
+
+            if (urlConn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                logger.error("Connection is not established");
+            } else {
+                logger.info(String.format("Connection with %s is established", node.getAddress()));
+                return true;
+            }
+
+            urlConn.disconnect();
+        } catch (IOException e) {
+            logger.error("Error creating HTTP connection with {}", node.getAddress());
+        }
+
+        return false;
+    }
+
     @Override
     public Map<String, Node> getNodes() {
         return nodes;
     }
 
     @Override
-    public void setNode(String name, Node node) {
-        this.nodes.put(name, node);
+    public String registerNode(String name, Node node) {
+        if (nodes.containsValue(node)) {
+            return "The node is already registered";
+        }
+
+        if (checkNodeConnection(name, node)) {
+            this.nodes.put(name, node);
+            return String.format("The node has been registered successfully. The name - \"" + name + "\"", name);
+        } else {
+            return String.format("Connection error to node %s", name);
+        }
     }
 
     @Override
